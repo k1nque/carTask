@@ -1,5 +1,5 @@
 from datetime import date
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from exts.enums import FuelType, TransmissionType
 
@@ -53,12 +53,10 @@ class CarFilter(BaseModel):
         return self
             
 
-
-
 class CarBase(BaseModel):
     brand: str
     model: str
-    release_date: date = Field(..., description="You have to put date in 'YYYY-MM-DD' format.")
+    release_date: date | int = Field(..., description="You have to put date in 'YYYY-MM-DD' format or just a year in 'YYYY' format.")
     fuel_type: FuelType
     transmission: TransmissionType
     mileage: int = Field(
@@ -72,6 +70,18 @@ class CarBase(BaseModel):
 
 
 class CarCreate(CarBase):
+    @field_validator("release_date")
+    @classmethod
+    def date_validator(cls, v: date | int):
+        if isinstance(v, int):
+            assert (
+                1910 < v <= date.today().year
+            ), f"Year must be in period: 1911-{date.today().year()}"
+            return date(year=v, month=1, day=1)
+        else:
+            return v
+
+
     @model_validator(mode="after")
     def validator(self):
         assert (
@@ -88,7 +98,6 @@ class CarCreate(CarBase):
         ), "Price cannot be less than 0 rub and much than 1 000 000 000 rub"
         return self
     
-
 
 class CarUpdate(CarBase):
     pass

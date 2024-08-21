@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Body, Depends
+from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.models.users import User
@@ -8,7 +8,7 @@ from ..dependencies import get_current_user
 
 from . import crud
 from .dependencies import car_by_id, get_pagination_params
-from .schemas import Car, CarCreate, CarFilter
+from .schemas import Car, CarCreate, CarFilter, CarUpdate, CarUpdatePartitital
 
 
 router = APIRouter(tags=["Cars"])
@@ -41,3 +41,32 @@ async def create_car(
 ):
     car: Car = await crud.create_car(session, car_in)
     return car
+
+
+@router.put("/{car_id}", response_model=Car)
+async def update_car(
+    car_update: CarUpdate,
+    car: Car = Depends(car_by_id),
+    user: User = Depends(get_current_user),
+    session: AsyncSession = Depends(db_helper.session_dependency)
+):
+    return await crud.update_car(session, car, car_update)
+
+
+@router.patch("/{car_id}", response_model=Car)
+async def update_car_partial(
+    car_update: CarUpdatePartitital,
+    car: Car = Depends(car_by_id),
+    user: User = Depends(get_current_user),
+    session: AsyncSession = Depends(db_helper.session_dependency)
+):
+    return await crud.update_car(session, car, car_update, True)
+
+
+@router.delete("/{car_id}")
+async def delete_car(
+    car: Car = Depends(car_by_id),
+    user: User = Depends(get_current_user),
+    session: AsyncSession = Depends(db_helper.session_dependency)
+):
+    await crud.delete_car(session, car)
