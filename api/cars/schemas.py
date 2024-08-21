@@ -86,6 +86,8 @@ class CarCreate(CarBase):
         assert (
             0 <= self.price <= 1_000_000_000
         ), "Price cannot be less than 0 rub and much than 1 000 000 000 rub"
+        return self
+    
 
 
 class CarUpdate(CarBase):
@@ -93,13 +95,13 @@ class CarUpdate(CarBase):
 
 
 class CarUpdatePartitital(CarBase):
-    car_brand: str | None
-    car_model: str | None
-    release_date: date | None
-    fuel_type: FuelType | None
-    transmission_type: TransmissionType | None
-    mileage: int | None
-    price: int | None
+    car_brand: str | None = None
+    car_model: str | None = None
+    release_date: date | None = None
+    fuel_type: FuelType | None = None
+    transmission_type: TransmissionType | None = None
+    mileage: int | None = None
+    price: int | None = None
 
 
 class Car(CarBase):

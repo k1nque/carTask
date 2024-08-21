@@ -4,11 +4,15 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from core.models.users import User
 
 
-async def find_user(session: AsyncSession, username: str) -> User | None:
+async def find_user_by_username(session: AsyncSession, username: str) -> User | None:
     stmnt = Select(User).where(User.username == username)
     result: Result = await session.execute(stmnt)
     usr = result.scalar_one_or_none()
     return usr
+
+
+async def find_user_by_id(session: AsyncSession, uid: int) -> User | None:
+    return session.get(User, uid)
 
 
 async def create_user(session: AsyncSession, username: str, passw_hash: str) -> User:

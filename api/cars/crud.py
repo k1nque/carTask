@@ -31,7 +31,7 @@ async def get_car_by_filters(
     return list(cars)
 
 
-async def create_car(session: AsyncSession, car_in: CarCreate, limit: int, offset: int):
+async def create_car(session: AsyncSession, car_in: CarCreate):
     car_params = car_in.model_dump()
     print(car_params)
     car_params["fuel_type"] = car_params["fuel_type"].value
