@@ -68,8 +68,6 @@ class CarBase(BaseModel):
         description="You have to put your car's price in Rubles"
     )
 
-
-class CarCreate(CarBase):
     @field_validator("release_date")
     @classmethod
     def date_validator(cls, v: date | int):
@@ -80,6 +78,10 @@ class CarCreate(CarBase):
             return date(year=v, month=1, day=1)
         else:
             return v
+
+
+class CarCreate(CarBase):
+    pass
 
 
     @model_validator(mode="after")
@@ -104,11 +106,11 @@ class CarUpdate(CarBase):
 
 
 class CarUpdatePartitital(CarBase):
-    car_brand: str | None = None
-    car_model: str | None = None
-    release_date: date | None = None
+    brand: str | None = None
+    model: str | None = None
+    release_date: date | int | None = None
     fuel_type: FuelType | None = None
-    transmission_type: TransmissionType | None = None
+    transmission: TransmissionType | None = None
     mileage: int | None = None
     price: int | None = None
 

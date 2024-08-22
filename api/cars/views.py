@@ -11,7 +11,7 @@ from .dependencies import car_by_id, get_pagination_params
 from .schemas import Car, CarCreate, CarFilter, CarUpdate, CarUpdatePartitital
 
 
-router = APIRouter(tags=["Cars"])
+router = APIRouter(tags=["cars"])
 
 @router.get("/{car_id}", response_model=Car)
 async def get_car(
@@ -33,7 +33,7 @@ async def get_car_by_filters(
     return await crud.get_car_by_filters(session, car_filter, limit, offset)
 
 
-@router.post("/", response_model=CarCreate)
+@router.post("/", response_model=Car)
 async def create_car(
     car_in: CarCreate,
     user: User = Depends(get_current_user),
