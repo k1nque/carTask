@@ -14,9 +14,11 @@ class CarFilter(BaseModel):
     mileage_max: int = 1_000_000
     price_min: int = 0
     price_max: int = 1_000_000_000
+    date_min: date | int | None = None
+    date_max: date | int | None = None
 
     @model_validator(mode="after")
-    def validator(self):
+    def mileage_validator(self):
         if self.mileage_min is not None and self.mileage_max is not None:
             assert (
                 self.mileage_min < self.mileage_max
@@ -33,7 +35,11 @@ class CarFilter(BaseModel):
             assert (
                 self.mileage_min > 0
             ), "Mileage_min value cannot be negative number"
+        return self
 
+
+    @model_validator(mode="after")
+    def price_validator(self):
         if self.price_min is not None and self.price_max is not None:
             assert (
                 self.price_min < self.price_max
@@ -51,7 +57,32 @@ class CarFilter(BaseModel):
                 self.price_max > 0
             ), "Price_max value cannot be negative number"
         return self
-            
+    
+
+    @model_validator(mode="after")
+    def date_validator(self):
+        if isinstance(self.date_min, int):
+            self.date_min = date(year=self.date_min, month=1, day=1)
+        if self.date_min is None:
+            self.date_min = date(year=1911, month=1, day=1)
+
+        assert (
+            1910 < self.date_min.year <= date.today().year
+        ), "Date_min must be after 1910 and not in the future xD"
+
+        if isinstance(self.date_max, int):
+            self.date_max = date(year=self.date_max, month=1, day=1)
+        if self.date_max is None:
+            self.date_max = date.today()
+        
+        assert (
+            1910 < self.date_max.year <= date.today().year
+        ), "Date_max must be after 1910 and not in the future xD"
+
+        assert (
+            self.date_min <= self.date_max
+        ), "Date_min cannot be after date_max"
+        return self
 
 class CarBase(BaseModel):
     brand: str

@@ -13,14 +13,14 @@ async def get_car_by_filters(
 ):
     stmnt = Select(Car)
     if car_filter.brand:
-        stmnt.filter_by(brand=car_filter.brand)
+        stmnt = stmnt.filter_by(brand=car_filter.brand)
     if car_filter.model:
-        stmnt.filter_by(model=car_filter.model)
+        stmnt = stmnt.filter_by(model=car_filter.model)
     if car_filter.fuel_type:
-        stmnt.filter_by(fuel_type=car_filter.fuel_type)
+        stmnt = stmnt.filter_by(fuel_type=car_filter.fuel_type)
     if car_filter.transmission:
-        stmnt.filter_by(transmission=car_filter.transmission)
-    stmnt.where(
+        stmnt = stmnt.filter_by(transmission=car_filter.transmission)
+    stmnt = stmnt.where(
         Car.mileage.between(
             car_filter.mileage_min,
             car_filter.mileage_max
@@ -28,8 +28,12 @@ async def get_car_by_filters(
         Car.price.between(
             car_filter.price_min,
             car_filter.price_max
+        ),
+        Car.release_date.between(
+            car_filter.date_min,
+            car_filter.date_max
         )
-    ).offset(offset).limit(limit)
+    ).order_by(Car.id).offset(offset).limit(limit)
 
     result: Result = await session.execute(stmnt)
     cars = result.scalars().all()
