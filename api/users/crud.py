@@ -12,7 +12,7 @@ async def find_user_by_username(session: AsyncSession, username: str) -> User | 
 
 
 async def find_user_by_id(session: AsyncSession, uid: int) -> User | None:
-    return session.get(User, uid)
+    return await session.get(User, uid)
 
 
 async def create_user(session: AsyncSession, username: str, passw_hash: str) -> User:
